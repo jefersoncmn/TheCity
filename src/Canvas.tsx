@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, MouseEventHandler } from 'react'
-import { Point, QuadTree, Rectangle } from './pages/models/quadTree';
+import { Losango, Point, QuadTree, Rectangle, Triangle } from './pages/models/quadTree';
 
 interface Props {
     // All props
@@ -8,10 +8,10 @@ interface Props {
 const Canvas = (props: Props) => {
 
     // var grid: Grid = new Grid(2, 2, 10);
-    let width: number = 200;
-    let height: number = 200;
-    let boundary = new Rectangle(0, 0, 0, width, height);
+    let width: number = 900;
+    let height: number = width * 0.7;
 
+    let boundary = new Losango(0, width / 2, height / 2, width, height);
     // use ref as HTML Canvas Element
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     let qt = new QuadTree(boundary, 4);
@@ -20,34 +20,38 @@ const Canvas = (props: Props) => {
 
     useEffect(() => {
         ctx = canvasRef.current?.getContext("2d") as any
-        createMap(ctx);
-        // showQuadTree(ctx, qt);
 
+        drawLosango(width / 2, height / 2, width, height, "#529441");
+        // drawTriangle(qt.boundary.triangleDown, "#a4b943");
+        // drawTriangle(qt.boundary.triangleUp, "#a4b943");
+        createMapWithLosango(ctx);
     }, [])
 
-    // const showQuadTree = (ctx: any, qt: QuadTree) => {
-    //     ctx.fillStyle = 'green';
+    const drawLosango = (x: any, y: any, w: any, h: any, color: any) => {
+        //https://www.guj.com.br/t/graphics-desenhar-losango/243668/6
+        ctx.fillStyle = color;
 
-    //     ctx.rect(qt.boundary.positionX, qt.boundary.positionY, qt.boundary.width, qt.boundary.height);
-    //     console.log('rect');
-    //     ctx.stroke();
-    //     if (qt.divided) {
-    //         showQuadTree(ctx, qt.northeast);
-    //         showQuadTree(ctx, qt.northwest);
-    //         showQuadTree(ctx, qt.southeast);
-    //         showQuadTree(ctx, qt.southwest);
-    //     }
+        ctx.beginPath();
+        ctx.moveTo(x, y - h / 2);
+        ctx.lineTo(x + w / 2, y);
+        ctx.lineTo(x, y + h / 2);
+        ctx.lineTo(x - w / 2, y);
+        ctx.lineTo(x, y - h / 2);
+        ctx.fill();
+        ctx.closePath();
+    }
 
-    //     // showPoints(ctx, qt);
-    // }
+    const drawTriangle = (triangle: Triangle, color: string) => {
+        //https://www.guj.com.br/t/graphics-desenhar-losango/243668/6
+        ctx.fillStyle = color;
 
-    const showPoints = (ctx: any, qt: QuadTree) => {
-        ctx.fillStyle = 'black';
-
-        for (var y = 1; y < qt.points.length; y++) {
-            ctx.fillRect(qt.points[y].x, qt.points[y].y, 3, 3);
-        }
-
+        ctx.beginPath();
+        ctx.moveTo(triangle.x1, triangle.y1);
+        ctx.lineTo(triangle.x2, triangle.y2);
+        ctx.lineTo(triangle.x3, triangle.y3);
+        ctx.lineTo(triangle.x1, triangle.y1);
+        ctx.fill();
+        ctx.closePath();
     }
 
     const getPosition = (event: any) => {
@@ -55,27 +59,43 @@ const Canvas = (props: Props) => {
 
         let point = new Point(event.clientX, event.clientY);
         let selected: any = [];
-        qt.query(point, selected);
+        qt.queryLosango(point, selected);
         console.log(selected);
         return null;
     }
 
-    const createMap = (ctx: any) => {
+    const createMapWithLosango = (ctx: any) => {
         let i = 0;
-        for (var x = 0; x < width; x += 50) {
-            for (var y = 0; y < height; y += 50) {
-                let p = new Rectangle(i, x, y, 50, 50);
-                // console.log("Retangulo criado x: " + p.positionX + " y: " + p.positionY);
-                qt.insertRectangle(p);
-                i++;
-                // ctx.strokeStyle = 'blue';
-                ctx.strokeRect(x, y, 50, 50);
+        let g = 3;
+        let _losangoWidth = 50;
+        let _losangoHeight = _losangoWidth * 0.7;
+        for (var x = _losangoWidth; x < width; x += _losangoWidth) {
+
+            for (var y = _losangoHeight / 2; y < height; y += _losangoHeight) {
+                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
+
+                if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
+                    qt.insertLosango(l);
+                    drawLosango(x, y, _losangoWidth, _losangoHeight, "#90db7d");
+                }
             }
+
+        }
+        for (var x = _losangoWidth / 2; x < width; x += _losangoWidth) {
+
+            for (var y = _losangoHeight; y < height; y += _losangoHeight) {
+                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
+
+                if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
+                    qt.insertLosango(l);
+                    drawLosango(x, y, _losangoWidth, _losangoHeight, "#90db7d");
+                }
+            }
+
         }
         console.log(qt);
 
     }
-
 
     return (
         <canvas
