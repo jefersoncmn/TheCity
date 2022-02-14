@@ -1,5 +1,8 @@
 import React, { useRef, useEffect, MouseEventHandler } from 'react'
-import { Losango, Point, QuadTree, Triangle } from './pages/models/quadTree';
+import { Losango } from './pages/models/losango';
+import { Point } from './pages/models/point';
+import { QuadTree } from './pages/models/quadTree';
+import { Triangle } from './pages/models/triangle';
 
 interface Props {
     // All props
@@ -11,7 +14,7 @@ const Canvas = (props: Props) => {
     let height: number = width * 0.7;
     let boundary = new Losango(0, width / 2, height / 2, width, height);
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    let qt = new QuadTree(boundary, 6);
+    let qt = new QuadTree(boundary, 4);
     let ctx: any;
 
 
