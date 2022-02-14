@@ -1,43 +1,3 @@
-//Esse código é do video
-//https://youtu.be/OJxEcs0w_kE
-import React, { useRef, useEffect, MouseEventHandler } from 'react'
-
-export class Rectangle {
-
-    id!: number;
-    positionX!: number;
-    positionY!: number;
-    width!: number;
-    height!: number;
-
-    constructor(id: number, positionX: number, positionY: number, width: number, height: number) {
-        this.id = id;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.width = width;
-        this.height = height;
-    }
-
-    contains(point: Point) {
-        return (
-            point.x >= this.positionX &&
-            point.x < this.positionX + this.width &&
-            point.y >= this.positionY &&
-            point.y < this.positionY + this.height
-        );
-    }
-
-    containsRectangle(rectangle: Rectangle) {
-        return (
-            rectangle.positionX < this.positionX + this.width &&
-            rectangle.positionX + rectangle.width > this.positionX &&
-            rectangle.positionY < this.positionY + this.height &&
-            rectangle.positionY + rectangle.height > this.positionY
-        );
-    }
-
-}
-
 export class Losango {
     id!: number;
     positionX!: number;
@@ -83,7 +43,11 @@ export class Losango {
         return false;
 
     }
-
+    /**
+     * Identifies if there is a diamond inside
+     * @param losango Losango class
+     * @returns True = This losango is inside; False = Is not in
+     */
     containsLosango(losango: Losango) {
         return (
             this.triangleUp.collisionTriangles(losango.triangleUp) ||
@@ -98,8 +62,6 @@ export class Losango {
 }
 
 export class Triangle {
-    //Site de referência aos codigos de colisão de triangulos
-    //http://www.jeffreythompson.org/collision-detection/tri-point.php
     x1: number; x2: number; x3: number;
     y1: number; y2: number; y3: number;
 
@@ -125,18 +87,17 @@ export class Triangle {
         return false;
     }
 
-    //Melhorar a eficiencia disso
-    //Isso só garante colisão de trinagulos de mesmo tamanho, ou triangulos equilateros
     collisionTriangles(triangle: Triangle) {
-        //Detect colision with points than other triangle
-        if (this.collisionPoint(new Point(triangle.x1, triangle.y1))) {
+        //Detect colision with points than other triangle, !works only equilateral triangles!
+        if (
+            this.collisionPoint(new Point(triangle.x1, triangle.y1)) ||
+            this.collisionPoint(new Point(triangle.x2, triangle.y2)) ||
+            this.collisionPoint(new Point(triangle.x3, triangle.y3))
+        ) {
             return true;
-        } else if (this.collisionPoint(new Point(triangle.x2, triangle.y2))) {
-            return true;
-        } else if (this.collisionPoint(new Point(triangle.x3, triangle.y3))) {
-            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
 
@@ -162,7 +123,6 @@ export class QuadTree {
     }
 
     subdivideLosango() {
-        // console.log("subdivisão aconteceu");
         let x = this.boundary.positionX;
         let y = this.boundary.positionY;
         let w = this.boundary.width;
@@ -187,7 +147,6 @@ export class QuadTree {
         if (!this.boundary.containsLosango(losango)) {
             return false;
         }
-
         if (this.losangos.length < this.capacity) {
             this.losangos.push(losango);
             return true;
@@ -195,32 +154,19 @@ export class QuadTree {
             if (!this.divided) {
                 this.subdivideLosango();
             }
-            if (this.north?.insertLosango(losango)) {
-                return true;
-            }
-            else if (this.south?.insertLosango(losango)) {
-                return true;
-            }
-            else if (this.heast?.insertLosango(losango)) {
-                return true;
-            }
-            else if (this.west?.insertLosango(losango)) {
-                return true;
-            }
+            this.north?.insertLosango(losango);
+            this.south?.insertLosango(losango);
+            this.heast?.insertLosango(losango);
+            this.west?.insertLosango(losango);
         }
     }
 
     queryLosango(point: Point, found: Losango[]) {
         if (!this.boundary.containsPoint(point)) {
-            console.log("ponto x: " + point.x + " y: " + point.y + " não colide com o losango x: " + this.boundary.positionX + " y: " + this.boundary.positionY + " w: " + this.boundary.width + " h: " + this.boundary.height);
             return;
         } else {
-            console.log("ponto x: " + point.x + " y: " + point.y + " colide com o losango x: " + this.boundary.positionX + " y: " + this.boundary.positionY + " w: " + this.boundary.width + " h: " + this.boundary.height);
-
             for (let i = 0; i < this.losangos.length; i++) {
                 if (this.losangos[i].containsPoint(point)) {
-                    console.log("ponto x: " + point.x + " y: " + point.y + " colide com o losango x: " + this.losangos[i].positionX + " y: " + this.losangos[i].positionY + " w: " + this.boundary.width + " h: " + this.boundary.height);
-
                     found.push(this.losangos[i]);
 
                 }
