@@ -45,7 +45,6 @@ export class Losango {
     width!: number;
     height!: number;
 
-    // losangoList: Array<Losango>;
     triangleUp: Triangle;
     triangleDown: Triangle;
 
@@ -56,9 +55,7 @@ export class Losango {
         this.width = width;
         this.height = height;
 
-        // this.losangoList = [];
-
-        this.triangleUp = new Triangle(
+        this.triangleDown = new Triangle(
             this.positionX - this.width / 2,
             this.positionY,
             this.positionX + this.width / 2,
@@ -67,7 +64,7 @@ export class Losango {
             this.positionY + this.height / 2
         );
 
-        this.triangleDown = new Triangle(
+        this.triangleUp = new Triangle(
             this.positionX - this.width / 2,
             this.positionY,
             this.positionX + this.width / 2,
@@ -151,10 +148,10 @@ export class QuadTree {
     capacity: number;
     losangos: Array<Losango>;
 
-    northwest!: QuadTree;
-    northeast!: QuadTree;
-    southwest!: QuadTree;
-    southeast!: QuadTree;
+    south!: QuadTree;
+    north!: QuadTree;
+    west!: QuadTree;
+    heast!: QuadTree;
 
     divided: boolean = false;
 
@@ -165,24 +162,23 @@ export class QuadTree {
     }
 
     subdivideLosango() {
-        console.log("subdivisão aconteceu");
+        // console.log("subdivisão aconteceu");
         let x = this.boundary.positionX;
         let y = this.boundary.positionY;
         let w = this.boundary.width;
         let h = this.boundary.height;
 
-        let ne = new Losango(0, x + w / 2, y - w / 2, w / 2, h / 2);
+        let n = new Losango(0, x, y - (h / 2) / 2, w / 2, h / 2);
+        this.north = new QuadTree(n, this.capacity);
 
-        this.northeast = new QuadTree(ne, this.capacity);
-        let nw = new Losango(0, x - w / 2, y - w / 2, w / 2, h / 2);
+        let s = new Losango(0, x, y + (h / 2) / 2, w / 2, h / 2);
+        this.south = new QuadTree(s, this.capacity);
 
-        this.northwest = new QuadTree(nw, this.capacity);
-        let se = new Losango(0, x + w / 2, y + w / 2, w / 2, h / 2);
+        let _w = new Losango(0, x - (w / 2) / 2, y, w / 2, h / 2);
+        this.west = new QuadTree(_w, this.capacity);
 
-        this.southeast = new QuadTree(se, this.capacity);
-        let sw = new Losango(0, x - w / 2, y + w / 2, w / 2, h / 2);
-
-        this.southwest = new QuadTree(sw, this.capacity);
+        let _h = new Losango(0, x + (w / 2) / 2, y, w / 2, h / 2);
+        this.heast = new QuadTree(_h, this.capacity);
         this.divided = true;
 
     }
@@ -199,22 +195,22 @@ export class QuadTree {
             if (!this.divided) {
                 this.subdivideLosango();
             }
-            if (this.northeast?.insertLosango(losango)) {
+            if (this.north?.insertLosango(losango)) {
                 return true;
             }
-            else if (this.northwest?.insertLosango(losango)) {
+            else if (this.south?.insertLosango(losango)) {
                 return true;
             }
-            else if (this.southeast?.insertLosango(losango)) {
+            else if (this.heast?.insertLosango(losango)) {
                 return true;
             }
-            else if (this.southwest?.insertLosango(losango)) {
+            else if (this.west?.insertLosango(losango)) {
                 return true;
             }
         }
     }
 
-    queryLosango(point: Point, found: any) {
+    queryLosango(point: Point, found: Losango[]) {
         if (!this.boundary.containsPoint(point)) {
             console.log("ponto x: " + point.x + " y: " + point.y + " não colide com o losango x: " + this.boundary.positionX + " y: " + this.boundary.positionY + " w: " + this.boundary.width + " h: " + this.boundary.height);
             return;
@@ -226,17 +222,18 @@ export class QuadTree {
                     console.log("ponto x: " + point.x + " y: " + point.y + " colide com o losango x: " + this.losangos[i].positionX + " y: " + this.losangos[i].positionY + " w: " + this.boundary.width + " h: " + this.boundary.height);
 
                     found.push(this.losangos[i]);
+
                 }
             }
 
             if (this.divided) {
-                this.northeast.queryLosango(point, found);
-                this.northwest.queryLosango(point, found);
-                this.southeast.queryLosango(point, found);
-                this.southwest.queryLosango(point, found);
+                this.north.queryLosango(point, found);
+                this.south.queryLosango(point, found);
+                this.heast.queryLosango(point, found);
+                this.west.queryLosango(point, found);
             }
         }
-        return found;
+
     }
 }
 
