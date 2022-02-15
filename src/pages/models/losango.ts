@@ -60,4 +60,13 @@ export class Losango {
         );
     }
 
+    containsLosangoFull(losango: Losango) {
+        return (
+            this.triangleUp.collisionTriangles(losango.triangleUp) &&
+            this.triangleUp.collisionTriangles(losango.triangleDown) &&
+            this.triangleDown.collisionTriangles(losango.triangleUp) &&
+            this.triangleDown.collisionTriangles(losango.triangleDown)
+        );
+    }
+
 }

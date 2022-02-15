@@ -117,9 +117,10 @@ const Canvas = (props: Props) => {
         let g = 3;
 
         let _losangoHeight = _losangoWidth * 0.7;
-        for (var x = _losangoWidth; x < width; x += _losangoWidth) {
 
-            for (var y = _losangoHeight / 2; y < height; y += _losangoHeight) {
+        for (var x = _losangoWidth / 2; x < width; x += _losangoWidth / 2) {
+
+            for (var y = _losangoHeight; y < height; y += _losangoHeight) {
                 let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
 
                 if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
@@ -128,11 +129,9 @@ const Canvas = (props: Props) => {
                     i++;
                 }
             }
+            x += _losangoWidth / 2;
 
-        }
-        for (var x = _losangoWidth / 2; x < width; x += _losangoWidth) {
-
-            for (var y = _losangoHeight; y < height; y += _losangoHeight) {
+            for (var y = _losangoHeight / 2; y < height; y += _losangoHeight) {
                 let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
 
                 if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
