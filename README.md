@@ -11,8 +11,13 @@ Tabela de conteúdos
 <!--te-->
 
 ### Sobre
+<div align="center">
+	<p>Em desenvolvimento</p>
+	<p>Esse projeto é um site que contém um minigame citybuilder, feito com React. Realizado no ano de 2022.</p>
+	<img  src="./public/the-city.gif"/>
+	<p>Selecionando partes do mapa</p>
+</div>
 
-Esse projeto é um site que contém um minigame citybuilder, feito com React. Realizado no ano de 2022.
 
 ### Estudo
 
@@ -20,9 +25,9 @@ No projeto será estudado:
 - JavaScript
 - TypeScript
 - Reactjs
-  - Estados
-  - Uso da biblioteca Styled Components
-  - Arquitetura de projetos Reactjs
+- Canvas
+- QuadTree (estrutura de dados)
+
 
 ### Pré-requisitos
 
