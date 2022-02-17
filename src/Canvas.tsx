@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, MouseEventHandler } from 'react'
+import { Cell } from './pages/models/cell';
 import { Losango } from './pages/models/losango';
 import { Point } from './pages/models/point';
 import { QuadTree } from './pages/models/quadTree';
@@ -50,7 +51,6 @@ const Canvas = (props: Props) => {
     }
 
     const drawLosango = (losango: Losango, color: any) => {
-        //https://www.guj.com.br/t/graphics-desenhar-losango/243668/6
         ctx.fillStyle = color;
 
         ctx.beginPath();
@@ -118,10 +118,15 @@ const Canvas = (props: Props) => {
 
         let _losangoHeight = _losangoWidth * 0.7;
 
+
+
+
         for (var x = _losangoWidth / 2; x < width; x += _losangoWidth / 2) {
 
             for (var y = _losangoHeight; y < height; y += _losangoHeight) {
-                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
+
+                let cell = new Cell();
+                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight, cell);
 
                 if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
                     qt.insertLosango(l);
@@ -132,7 +137,9 @@ const Canvas = (props: Props) => {
             x += _losangoWidth / 2;
 
             for (var y = _losangoHeight / 2; y < height; y += _losangoHeight) {
-                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight);
+
+                let cell = new Cell();
+                let l = new Losango(i, x, y, _losangoWidth, _losangoHeight, cell);
 
                 if (qt.boundary.containsPoint(new Point(l.positionX, l.positionY))) {
                     qt.insertLosango(l);

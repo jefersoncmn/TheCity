@@ -1,3 +1,4 @@
+import { Cell } from "./cell";
 import { Point } from "./point";
 import { Triangle } from "./triangle";
 
@@ -8,10 +9,12 @@ export class Losango {
     width!: number;
     height!: number;
 
+    cell?: Cell;
+
     triangleUp: Triangle;
     triangleDown: Triangle;
 
-    constructor(id: number, positionX: number, positionY: number, width: number, height: number) {
+    constructor(id: number, positionX: number, positionY: number, width: number, height: number, cell?: Cell) {
         this.id = id;
         this.positionX = positionX;
         this.positionY = positionY;
@@ -35,6 +38,8 @@ export class Losango {
             this.positionX,
             this.positionY - this.height / 2
         );
+
+        this.cell = cell;
     }
 
     containsPoint(point: Point) {
