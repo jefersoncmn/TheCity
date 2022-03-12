@@ -1,5 +1,6 @@
 import { Losango } from "./losango";
 import { Point } from "./point";
+import { Rectangle } from "./rectangle";
 
 export class QuadTree {
 
@@ -66,7 +67,6 @@ export class QuadTree {
             for (let i = 0; i < this.losangos.length; i++) {
                 if (this.losangos[i].containsPoint(point)) {
                     found.push(this.losangos[i]);
-
                 }
             }
 
@@ -78,6 +78,31 @@ export class QuadTree {
             }
         }
 
+    }
+
+    queryLosangoWithRectangle(rectangle: Rectangle, found: Losango[]) {
+        if (!this.boundary.intersectsRectangle(rectangle)) {
+            return;
+        } else {
+            for (let i = 0; i < this.losangos.length; i++) {
+                // if (this.losangos[i].containsRectangle(rectangle)) {
+                //     found.push(this.losangos[i]);
+                // }
+                // if (rectangle.contains(new Point(this.losangos[i].positionX, this.losangos[i].positionY))) {
+                //     found.push(this.losangos[i]);
+                // }
+                if (rectangle.containsLosango(this.losangos[i])) {
+                    found.push(this.losangos[i]);
+                }
+            }
+
+            if (this.divided) {
+                this.north.queryLosangoWithRectangle(rectangle, found);
+                this.south.queryLosangoWithRectangle(rectangle, found);
+                this.heast.queryLosangoWithRectangle(rectangle, found);
+                this.west.queryLosangoWithRectangle(rectangle, found);
+            }
+        }
     }
 }
 
